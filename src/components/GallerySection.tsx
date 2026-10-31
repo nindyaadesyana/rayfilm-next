@@ -2,7 +2,7 @@
  * KOMPONEN: GallerySection
  * ========================
  * Section katalog brand di halaman utama.
- * Menampilkan slider 3 brand (RAYFILM, Diary Sedjiwa, Diary Graduation).
+ * Menampilkan slider 3 brand (RAYFILM, Diary Sejiwa, Diary Graduation).
  * Setiap slide punya kolase foto di kanan dan deskripsi brand di kiri.
  *
  * CARA KERJA AUTO-UPDATE FOTO KOLASE:
@@ -37,6 +37,14 @@ import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
+function InstagramIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" width={size} height={size} aria-hidden="true">
+      <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5zm5.75-3.25a1.25 1.25 0 1 1-1.25 1.25 1.25 1.25 0 0 1 1.25-1.25z" />
+    </svg>
+  );
+}
+
 // Tipe data ini dipakai untuk menyimpan foto di setiap slot kolase.
 // src bisa null agar sistem menampilkan placeholder jika file belum ada.
 interface PhotoEntry {
@@ -63,18 +71,20 @@ const brands = [
     description: "From high-energy event documentation to sleek product photography and polished company profiles — RAYFILM delivers cinematic quality across every format. We tell the story of your brand with precision and soul.",
     services:    ["Event Dokumentasi", "Product Foto", "Company Profile"],
     count:       "120+ Projects",
+    instagram:   "https://instagram.com/rayfilm_",
   },
   {
     id:          "diarysedjiwa",
     slug:        "diary-sedjiwa",
     // Nama folder foto: public/images/diarysejiwa/
     // File kolase:      public/images/diarysejiwa/kolase-*.jpg
-    name:        "Diary Sedjiwa",
+    name:        "Diary Sejiwa",
     tagline:     "Wedding & Prewed Photography",
     year:        "Est. 2021",
-    description: "Diary Sedjiwa captures the quiet poetry of love — the nervous glance before the vows, the laughter between moments. Specialising in prewedding sessions and wedding day coverage that feel timeless.",
+    description: "Diary Sejiwa captures the quiet poetry of love — the nervous glance before the vows, the laughter between moments. Specialising in prewedding sessions and wedding day coverage that feel timeless.",
     services:    ["Prewedding", "Wedding"],
     count:       "80+ Sessions",
+    instagram:   "https://instagram.com/diary.sejiwa",
     // Nama folder berbeda dengan slug (typo lama di folder)
     folderName:  "diarysejiwa",
   },
@@ -88,7 +98,8 @@ const brands = [
     year:        "Est. 2022",
     description: "Years of dedication, one unforgettable milestone. Diary Graduation frames your achievement with elegance — solo portraits, family moments, and candid celebrations that you'll carry for a lifetime.",
     services:    ["Foto Wisuda", "Family Portraits", "Studio Session"],
-    count:       "200+ Wisudawan",
+    count:       "200+ Graduation Clients",
+    instagram:   "https://instagram.com/diarygraduation",
   },
 ];
 
@@ -156,7 +167,7 @@ export default function GallerySection() {
   // dan mengembalikan list file kolase (prefix "kolase-") secara otomatis.
   useEffect(() => {
     brands.forEach(async (brand) => {
-      // Gunakan folderName jika ada (untuk Diary Sedjiwa yang foldernya berbeda)
+      // Gunakan folderName jika ada (untuk Diary Sejiwa yang foldernya berbeda)
       const folder = (brand as typeof brands[0] & { folderName?: string }).folderName ?? brand.id;
       try {
         const res  = await fetch(`/api/photos?brand=${folder}`, { cache: "no-store" });
@@ -285,7 +296,7 @@ export default function GallerySection() {
                   <p className="text-xs font-semibold tracking-wide" style={{ color: "#aaa" }}>{brand.count}</p>
                 </div>
 
-                {/* Tombol See All Photos → halaman catalogue brand */}
+                {/* Tombol See All Photos */}
                 <div>
                   <Link
                     href={`/catalogue/${brand.slug}`}

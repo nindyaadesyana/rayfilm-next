@@ -72,12 +72,14 @@ export default function TeamModal({ open, onClose }: Props) {
                   }`}
                 >
                   {/* Avatar */}
-                  <div className="flex-shrink-0 w-24 h-28 sm:w-28 sm:h-32 rounded-xl overflow-hidden bg-[#f2f2f2] border border-[#e8e8e8] flex items-center justify-center">
+                  <div className="flex-shrink-0 w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] rounded-xl overflow-hidden bg-[#f2f2f2] border border-[#e8e8e8]">
                     {f.photo ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={f.photo} alt={f.name} className="w-full h-full object-cover" />
+                      <img src={f.photo} alt={f.name} className="w-full h-full object-contain object-center bg-[#f2f2f2]" />
                     ) : (
-                      <User size={32} className="text-[#c8c8c8]" />
+                      <div className="flex h-full w-full items-center justify-center">
+                        <User size={32} className="text-[#c8c8c8]" />
+                      </div>
                     )}
                   </div>
                   {/* Body */}

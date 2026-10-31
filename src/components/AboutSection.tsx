@@ -140,7 +140,7 @@ export default function AboutSection() {
                       alt={f.name}
                       fill
                       sizes="(max-width: 768px) 50vw, 25vw"
-                      className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                      className="object-contain object-center group-hover:scale-[1.03] transition-transform duration-500"
                       quality={90}
                       unoptimized
                     />

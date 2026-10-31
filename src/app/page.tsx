@@ -9,7 +9,7 @@
  * 2. HeroSection  — full-screen background foto dengan headline
  * 3. AboutSection — profil RAYFILM + foto founder & co-founder
  * 4. ClientsSection — marquee logo klien
- * 5. GallerySection — slider 3 brand catalogue (RAYFILM, Diary Sedjiwa, Diary Graduation)
+ * 5. GallerySection — slider 3 brand catalogue (RAYFILM, Diary Sejiwa, Diary Graduation)
  * 6. ContactSection — form kontak + info WhatsApp/Instagram/Email
  * 7. Footer       — copyright + sosial media
  *

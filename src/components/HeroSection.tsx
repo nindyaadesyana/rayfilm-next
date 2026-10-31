@@ -66,10 +66,15 @@ export default function HeroSection() {
         {/* Logo */}
         <button
           onClick={() => scrollTo("#home")}
-          className="text-white font-black text-base tracking-[0.18em] uppercase hover:opacity-60 transition-opacity"
+          className="flex items-center hover:opacity-80 transition-opacity"
           style={{ textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}
+          aria-label="Go to home"
         >
-          RAYFILM
+          <img
+            src="/images/Logo Ray Film.png"
+            alt="RAYFILM logo"
+            className="h-8 md:h-9 w-auto object-contain"
+          />
         </button>
 
         {/* Desktop nav — 4 links */}

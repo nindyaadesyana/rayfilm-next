@@ -22,7 +22,7 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -43,48 +43,47 @@ const navLinks = [
 // Jadi update file di folder cukup, tanpa harus edit array di sini.
 
 // URL video utama yang tampil di featured card.
-// Video ini berfungsi sebagai preview visual hero di halaman katalog brand.
-const VIDEO_SRC = "/videos/rayfilm-workshop.mp4";
+// Kita pakai YouTube embed karena link watch biasa dari YouTube tidak bisa dipakai di <video>.
+// Gunakan embed URL agar video bisa tampil di web dan tetap rapi tanpa upload file besar ke GitHub.
+const VIDEO_SRC = "https://www.youtube.com/embed/T5oFXSy69fQ?mute=1&loop=1&playlist=T5oFXSy69fQ&rel=0";
 
 // ── Netflix Video Card (hover to preview, click to fullscreen) ────────────────
 function NetflixVideoCard() {
-  const videoRef   = useRef<HTMLVideoElement>(null);
-  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [hovered, setHovered]       = useState(false);
+  const [hovered, setHovered] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
 
-  const handleEnter = () => {
-    hoverTimer.current = setTimeout(() => {
-      setHovered(true);
-      videoRef.current?.play().catch(() => {});
-    }, 180);
+  const triggerHoverPlay = () => {
+    setHovered(true);
   };
 
-  const handleLeave = () => {
-    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+  const triggerHoverPause = () => {
     setHovered(false);
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
   };
 
   return (
     <>
       <motion.div
-        onMouseEnter={handleEnter}
-        onMouseLeave={handleLeave}
+        onMouseEnter={triggerHoverPlay}
+        onMouseLeave={triggerHoverPause}
         animate={hovered
-          ? { scale: 1.06, y: -12, zIndex: 30, boxShadow: "0 32px 72px rgba(0,0,0,0.28)" }
-          : { scale: 1,    y: 0,   zIndex: 1,  boxShadow: "0 4px 20px rgba(0,0,0,0.08)"  }
+          ? { scale: 1.02, y: -6, zIndex: 30, boxShadow: "0 22px 60px rgba(0,0,0,0.22)" }
+          : { scale: 1,    y: 0,   zIndex: 1,  boxShadow: "0 6px 18px rgba(0,0,0,0.08)" }
         }
-        transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         className="relative rounded-2xl overflow-hidden cursor-pointer select-none"
         style={{ border: "1px solid #e8e8e8" }}
         onClick={() => setFullscreen(true)}
       >
         <div style={{ aspectRatio: "16/9", position: "relative" }}>
-          <video ref={videoRef} src={VIDEO_SRC} muted loop playsInline preload="metadata" className="w-full h-full object-cover" />
+          <iframe
+            src={hovered ? `${VIDEO_SRC}&autoplay=1` : VIDEO_SRC}
+            title="Rayfilm featured video"
+            className="h-full w-full"
+            style={{ border: 0, display: "block", pointerEvents: "none" }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
           <motion.div animate={{ opacity: hovered ? 0 : 1 }} transition={{ duration: 0.4 }}
             className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.18)" }}
           >
@@ -101,11 +100,10 @@ function NetflixVideoCard() {
           </div>
         </div>
 
-        {/* Info panel muncul saat hover */}
         <AnimatePresence>
           {hovered && (
             <motion.div key="info" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.28 }} className="overflow-hidden" style={{ background: "#111" }}>
+              exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }} className="overflow-hidden" style={{ background: "#111" }}>
               <div className="px-5 py-4">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div>
@@ -132,7 +130,6 @@ function NetflixVideoCard() {
         </AnimatePresence>
       </motion.div>
 
-      {/* Fullscreen modal */}
       <AnimatePresence>
         {fullscreen && (
           <motion.div key="fs" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -141,7 +138,15 @@ function NetflixVideoCard() {
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.25 }} className="relative w-full max-w-5xl mx-4 rounded-2xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}>
-              <video src={VIDEO_SRC} controls autoPlay className="w-full rounded-2xl" style={{ maxHeight: "82vh" }} />
+              <iframe
+                src={`${VIDEO_SRC}&autoplay=1`}
+                title="Rayfilm featured video fullscreen"
+                className="w-full rounded-2xl"
+                style={{ maxHeight: "82vh", border: 0, aspectRatio: "16 / 9" }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
               <button onClick={() => setFullscreen(false)} className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center"
                 style={{ background: "rgba(0,0,0,0.65)", color: "#fff" }}><X size={16} /></button>
             </motion.div>
@@ -187,9 +192,17 @@ function PhotoCard({ src, index }: { src: string; index: number }) {
             <motion.div initial={{ scale: 0.88, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.88, opacity: 0 }}
               transition={{ duration: 0.22 }} className="relative mx-4" onClick={(e) => e.stopPropagation()}>
               {/* unoptimized=true di lightbox juga supaya foto HD langsung dari disk */}
-              <Image src={src} alt={`RAYFILM photo ${index + 1}`} width={1600} height={1200}
-                className="rounded-2xl object-contain" style={{ maxHeight: "88vh", maxWidth: "90vw", width: "auto" }}
-                quality={100} unoptimized />
+              <Image
+                src={src}
+                alt={`RAYFILM photo ${index + 1}`}
+                width={1600}
+                height={1200}
+                sizes="(max-width: 768px) 90vw, 80vw"
+                className="block rounded-2xl object-contain"
+                style={{ maxHeight: "88vh", maxWidth: "90vw", width: "auto", height: "auto", display: "block" }}
+                quality={100}
+                unoptimized
+              />
               <button onClick={() => setFull(false)} className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center"
                 style={{ background: "rgba(0,0,0,0.65)", color: "#fff" }}><X size={16} /></button>
             </motion.div>
@@ -226,7 +239,7 @@ const instagramReels = [
 // Karena embed Instagram bersifat cross-origin, kita tidak bisa mengubah UI di dalam iframe
 // secara penuh. Solusi yang dipakai adalah menampilkan frame card yang tetap terkontrol
 // dari sisi aplikasi, lalu iframe dipasang di dalam area card tersebut.
-export function InstagramReelCard({ reel }: { reel: (typeof instagramReels)[number] }) {
+function InstagramReelCard({ reel }: { reel: (typeof instagramReels)[number] }) {
   // isHovered dipakai untuk mengecek apakah mouse sedang berada di area card.
   // state ini bisa dipakai nanti kalau mau menambah efek khusus seperti zoom,
   // overlay, atau autoplay conditional.
@@ -298,7 +311,9 @@ export default function RayfilmCatalogue() {
       {/* Navbar */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#ebebeb]">
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link href="/" className="text-[#0a0a0a] font-black text-base tracking-[0.18em] uppercase hover:opacity-60 transition-opacity">RAYFILM</Link>
+          <Link href="/" className="flex items-center hover:opacity-60 transition-opacity">
+            <img src="/images/Logo Ray Film.png" alt="RAYFILM logo" className="h-8 md:h-9 w-auto object-contain" />
+          </Link>
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((l) => <Link key={l.href} href={l.href} className="text-sm font-medium text-[#6b6b6b] hover:text-[#0a0a0a] transition-colors">{l.label}</Link>)}
           </nav>
@@ -315,7 +330,9 @@ export default function RayfilmCatalogue() {
           className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center mb-24">
           <div>
             <p className="text-xs font-semibold tracking-[0.22em] uppercase text-[#aaa] mb-4">Catalogue</p>
-            <h1 className="font-black tracking-tight leading-[0.92] mb-3" style={{ fontSize: "clamp(2.8rem, 6vw, 5rem)", color: "#0a0a0a" }}>RAYFILM</h1>
+            <h1 className="font-black tracking-tight leading-[0.92] mb-3" style={{ fontSize: "clamp(2.8rem, 6vw, 5rem)", color: "#0a0a0a" }}>
+              RAYFILM
+            </h1>
             <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#bbb] mb-6">Visual Production House</p>
             <p className="text-[#6b6b6b] text-[0.94rem] leading-relaxed max-w-sm mb-8">
               Event documentation, product photography, and company profiles — cinematic quality across every format.

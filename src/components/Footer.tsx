@@ -25,40 +25,46 @@ function InstagramIcon({ size = 15 }: { size?: number }) {
 }
 
 const socials = [
-  { icon: MessageCircle, href: "https://wa.me/6285848664492",    label: "WhatsApp"  },
-  { icon: InstagramIcon, href: "https://instagram.com/rayfilm_", label: "Instagram" },
-  { icon: Mail,          href: "mailto:hello@rayfilm.id",         label: "Email"     },
+  { icon: MessageCircle, href: "https://wa.me/6285848664492", label: "WhatsApp", bg: "bg-transparent text-white border border-white/80" },
+  { icon: InstagramIcon, href: "https://instagram.com/rayfilm_", label: "Instagram", bg: "bg-transparent text-white border border-white/80" },
+  { icon: Mail, href: "mailto:rayfilm.work@gmail.com", label: "Email", bg: "bg-transparent text-white border border-white/80" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-[#e8e8e8]">
+    <footer className="bg-[#111111] border-t border-[#2a2a2a]">
       <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-8 border-b border-[#f0f0f0]">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-8 border-b border-[#2a2a2a]">
 
           {/* Brand */}
-          <div>
-            <div className="mb-1.5">
-              <span className="font-black text-base tracking-[0.18em] text-[#0a0a0a]">RAYFILM  </span>
+          <div className="flex flex-col items-start gap-3">
+            <div className="flex items-center gap-5 flex-wrap">
+              <img
+                src="/images/Logo Ray Film.png"
+                alt="Rayfilm logo"
+                className="h-10 md:h-11 w-auto object-contain"
+              />
+              <img
+                src="/images/Logo Diary Sejiwa.png"
+                alt="Diary Sejiwa logo"
+                className="h-7 md:h-8 w-auto object-contain"
+              />
             </div>
-            <div className="mb-1.5">
-              <span className="font-black text-base tracking-[0.18em] text-[#0a0a0a]">DIARY SEJIWA</span>
-            </div>
-            <p className="text-xs text-[#9a9a9a] max-w-[220px] leading-relaxed">
+            <p className="text-xs text-[#d1d1d1] max-w-[220px] leading-relaxed">
               Production House · Video Ads · TikTok · Reels · Company Profile · Commercial
             </p>
           </div>
 
           {/* Socials */}
           <div className="flex items-center gap-2.5">
-            {socials.map(({ icon: Icon, href, label }) => (
+            {socials.map(({ icon: Icon, href, label, bg }) => (
               <a
                 key={label}
                 href={href}
                 target={href.startsWith("mailto") ? undefined : "_blank"}
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="w-9 h-9 rounded-full border border-[#e4e4e4] flex items-center justify-center text-[#9a9a9a] hover:text-[#0a0a0a] hover:border-[#0a0a0a] transition-all"
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-105 ${bg}`}
               >
                 <Icon size={15} />
               </a>
@@ -67,10 +73,10 @@ export default function Footer() {
         </div>
 
         <div className="pt-5 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-xs text-[#c8c8c8]">
+          <p className="text-xs text-[#9f9f9f]">
             &copy; {new Date().getFullYear()} RAYFILM Production House. All rights reserved.
           </p>
-          <p className="text-xs italic text-[#c8c8c8]">Dream · Create · Inspire</p>
+          <p className="text-xs italic text-[#d8d8d8]">Dream · Create · Inspire</p>
         </div>
       </div>
     </footer>

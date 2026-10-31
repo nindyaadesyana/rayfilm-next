@@ -64,37 +64,36 @@ export default function Navbar() {
         initial={{ y: -56, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-        className="fixed top-0 inset-x-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#e8e8e8]"
+        className="fixed top-0 inset-x-0 z-50 bg-[#111111]/80 backdrop-blur-md border-b border-white/10"
       >
-        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
           {/* Logo */}
           <button
             onClick={() => nav("#home")}
-            className="text-[#0a0a0a] font-black text-base tracking-[0.18em] uppercase hover:opacity-60 transition-opacity"
+            className="flex items-center hover:opacity-80 transition-opacity"
+            aria-label="Go to home"
           >
-            RAYFILM
+            <img
+              src="/images/Logo Ray Film.png"
+              alt="Rayfilm logo"
+              className="h-8 md:h-9 w-auto object-contain"
+            />
           </button>
 
           {/* Desktop — 4 links */}
-          <ul className="hidden md:flex items-center gap-8">
+          <ul className="hidden md:flex items-center gap-2 rounded-full border border-white/10 bg-white/5 p-1.5">
             {links.map((l) => (
               <li key={l.href}>
                 <button
                   onClick={() => nav(l.href)}
-                  className={`relative text-sm font-medium transition-colors ${
+                  className={`relative rounded-full px-4 py-2 text-sm font-medium transition-all ${
                     active === l.href.slice(1)
-                      ? "text-[#0a0a0a]"
-                      : "text-[#6b6b6b] hover:text-[#0a0a0a]"
+                      ? "bg-white text-[#0a0a0a] shadow-sm"
+                      : "text-[#e6e6e6] hover:bg-white/10 hover:text-white"
                   }`}
                 >
                   {l.label}
-                  {active === l.href.slice(1) && (
-                    <motion.span
-                      layoutId="nav-underline"
-                      className="absolute -bottom-0.5 left-0 right-0 h-px bg-[#0a0a0a]"
-                    />
-                  )}
                 </button>
               </li>
             ))}

@@ -19,20 +19,12 @@ function Toast({ show, type, message, onClose }: { show: boolean; type: ToastTyp
   );
 }
 
-function InstagramIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" width={size} height={size} aria-hidden="true">
-      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
-    </svg>
-  );
-}
-
 interface FormState { name: string; email: string; subject: string; message: string; }
 const INIT: FormState = { name: "", email: "", subject: "", message: "" };
 
 const contactCards = [
   { icon: MessageCircle, label: "WhatsApp",  value: "+62 812-3456-7890", href: "https://wa.me/6281234567890",       hint: "Chat directly"        },
-  { icon: InstagramIcon, label: "Instagram", value: "@rayfilm_",         href: "https://instagram.com/rayfilm_",   hint: "See our latest work"  },
+  //{ icon: InstagramIcon, label: "Instagram", value: "@rayfilm_",         href: "https://instagram.com/rayfilm_",   hint: "See our latest work"  },
   { icon: Mail,          label: "Email",     value: "rayfilm.work@gmail.com",  href: "mailto:rayfilm.work@gmail.com",           hint: "Send us a message"    },
 ];
 
@@ -50,12 +42,35 @@ export default function ContactSection() {
       setToast({ show: true, type: "error", message: "Please fill in all fields." });
       return;
     }
+
     setLoad(true);
-    await new Promise((r) => setTimeout(r, 1600));
-    window.location.href = `mailto:hello@rayfilm.id?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`)}`;
-    setLoad(false);
-    setForm(INIT);
-    setToast({ show: true, type: "success", message: "Opening your mail client…" });
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json() as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send message.");
+      }
+
+      setForm(INIT);
+      setToast({ show: true, type: "success", message: "Message sent successfully." });
+    } catch (error) {
+      setToast({
+        show: true,
+        type: "error",
+        message: error instanceof Error ? error.message : "Failed to send message.",
+      });
+    } finally {
+      setLoad(false);
+    }
   };
 
   return (
@@ -69,7 +84,7 @@ export default function ContactSection() {
               initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               className="text-xs font-semibold tracking-[0.22em] uppercase text-[#9a9a9a] mb-3"
             >
-              Let's Connect
+              Let&apos;s Connect
             </motion.p>
             <motion.h2
               initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.08 }}
@@ -81,7 +96,7 @@ export default function ContactSection() {
               initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.14 }}
               className="text-[#6b6b6b] text-base max-w-md"
             >
-              Ready to create something extraordinary? Reach out — we'd love to hear about your project.
+              Ready to create something extraordinary? Reach out — we&apos;d love to hear about your project.
             </motion.p>
           </div>
 
@@ -136,7 +151,7 @@ export default function ContactSection() {
                   <label htmlFor="subject" className="text-xs font-semibold uppercase tracking-[0.12em] text-[#9a9a9a]">Subject</label>
                   <input
                     id="subject" name="subject" type="text" value={form.subject} onChange={onChange}
-                    placeholder="What's this about?" required
+                    placeholder="What&apos;s this about?" required
                     className="w-full px-4 py-3 rounded-xl bg-white border border-[#e4e4e4] text-[#0a0a0a] text-sm placeholder-[#c8c8c8] focus:outline-none focus:border-[#9a9a9a] transition-colors"
                   />
                 </div>

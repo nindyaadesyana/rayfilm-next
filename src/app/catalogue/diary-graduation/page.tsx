@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { X } from "lucide-react";
+import { Mail, X } from "lucide-react";
 
 // Navigasi halaman katalog.
 // Fungsi utamanya adalah agar user bisa berpindah antar bagian homepage dan halaman brand tanpa reload penuh.
@@ -71,7 +71,9 @@ function PhotoCard({ src, index }: { src: string; index: number }) {
                 alt={`Diary Graduation photo ${index + 1}`}
                 width={1600}
                 height={1200}
-                className="rounded-xl object-contain max-h-[90vh] w-auto"
+                sizes="(max-width: 768px) 90vw, 80vw"
+                className="block rounded-xl object-contain"
+                style={{ maxHeight: "90vh", maxWidth: "90vw", width: "auto", height: "auto", display: "block" }}
                 quality={100}
                 unoptimized
               />
@@ -124,13 +126,13 @@ export default function DiaryGraduation() {
       active = false;
     };
   }, []);
-
+  
   return (
     <main className="min-h-screen bg-white">
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#ebebeb]">
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link href="/" className="text-[#0a0a0a] font-black text-base tracking-[0.18em] uppercase hover:opacity-60 transition-opacity">
-            RAYFILM
+          <Link href="/" className="flex items-center hover:opacity-60 transition-opacity">
+            <img src="/images/Logo Ray Film.png" alt="RAYFILM logo" className="h-8 md:h-9 w-auto object-contain" />
           </Link>
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((l) => (
