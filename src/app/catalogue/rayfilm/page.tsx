@@ -26,7 +26,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { X, Play, Clock, Tag } from "lucide-react";
+import { X, Play, Clock, Tag, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
 import { TikTokCard } from "@/components/TikTokCard";
 import { videos } from "@/data/videos";
 
@@ -158,58 +158,29 @@ function NetflixVideoCard() {
 }
 
 // ── Photo Card (hover popup + lightbox) ───────────────────────────────────────
-function PhotoCard({ src, index }: { src: string; index: number }) {
+function PhotoCard({ src, index, onOpen }: { src: string; index: number; onOpen: (index: number) => void }) {
   const [hovered, setHovered] = useState(false);
-  const [full, setFull]       = useState(false);
 
   return (
-    <>
-      <motion.div
-        className="relative cursor-pointer overflow-hidden rounded-xl"
-        style={{ border: "1px solid #f0f0f0", aspectRatio: "3/4" }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        animate={hovered ? { scale: 1.04, boxShadow: "0 12px 36px rgba(0,0,0,0.18)" } : { scale: 1, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
-        transition={{ duration: 0.28 }}
-        onClick={() => setFull(true)}
-      >
-        {/* unoptimized=true → foto selalu dibaca langsung dari disk, tidak di-cache Next.js */}
-        <Image src={src} alt={`RAYFILM photo ${index + 1}`} fill
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-          className="object-cover" quality={90} unoptimized />
-        <motion.div animate={{ opacity: hovered ? 1 : 0 }} transition={{ duration: 0.2 }}
-          className="absolute inset-0 flex items-end p-3"
-          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%)" }}>
-          <span className="text-[10px] font-bold tracking-widest uppercase text-white/80">View</span>
-        </motion.div>
+    <motion.div
+      className="relative cursor-pointer overflow-hidden rounded-xl"
+      style={{ border: "1px solid #f0f0f0", aspectRatio: "3/4" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      animate={hovered ? { scale: 1.04, boxShadow: "0 12px 36px rgba(0,0,0,0.18)" } : { scale: 1, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
+      transition={{ duration: 0.28 }}
+      onClick={() => onOpen(index)}
+    >
+      {/* unoptimized=true → foto selalu dibaca langsung dari disk, tidak di-cache Next.js */}
+      <Image src={src} alt={`RAYFILM photo ${index + 1}`} fill
+        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+        className="object-cover" quality={90} unoptimized />
+      <motion.div animate={{ opacity: hovered ? 1 : 0 }} transition={{ duration: 0.2 }}
+        className="absolute inset-0 flex items-end p-3"
+        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%)" }}>
+        <span className="text-[10px] font-bold tracking-widest uppercase text-white/80">View</span>
       </motion.div>
-
-      <AnimatePresence>
-        {full && (
-          <motion.div key={`lb-${index}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.92)" }}
-            onClick={() => setFull(false)}>
-            <motion.div initial={{ scale: 0.88, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.88, opacity: 0 }}
-              transition={{ duration: 0.22 }} className="relative mx-4" onClick={(e) => e.stopPropagation()}>
-              {/* unoptimized=true di lightbox juga supaya foto HD langsung dari disk */}
-              <Image
-                src={src}
-                alt={`RAYFILM photo ${index + 1}`}
-                width={1600}
-                height={1200}
-                sizes="(max-width: 768px) 90vw, 80vw"
-                className="block rounded-2xl object-contain"
-                style={{ maxHeight: "88vh", maxWidth: "90vw", width: "auto", height: "auto", display: "block" }}
-                quality={100}
-                unoptimized
-              />
-              <button onClick={() => setFull(false)} className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center"
-                style={{ background: "rgba(0,0,0,0.65)", color: "#fff" }}><X size={16} /></button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+    </motion.div>
   );
 }
 
@@ -278,6 +249,7 @@ export default function RayfilmCatalogue() {
   // State photos ini menampung semua foto hasil fetch dari API.
   // Halaman kemudian memetakan tiap item menjadi card foto untuk ditampilkan.
   const [photos, setPhotos] = useState<Array<{ src: string }>>([]);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -305,6 +277,28 @@ export default function RayfilmCatalogue() {
     };
   }, []);
 
+  useEffect(() => {
+    if (activeIndex === null || photos.length === 0) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") {
+        setActiveIndex((prev) => (prev === null ? null : (prev - 1 + photos.length) % photos.length));
+      }
+      if (event.key === "ArrowRight") {
+        setActiveIndex((prev) => (prev === null ? null : (prev + 1) % photos.length));
+      }
+      if (event.key === "Escape") {
+        setActiveIndex(null);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [activeIndex, photos.length]);
+
+  const currentPhoto = activeIndex !== null ? photos[activeIndex] : null;
+  const activePhotoIndex = activeIndex ?? 0;
+
   return (
     <main className="min-h-screen bg-white">
 
@@ -324,6 +318,9 @@ export default function RayfilmCatalogue() {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-16">
+        <Link href="/#gallery" aria-label="Back to catalogue" className="mb-8 inline-flex items-center justify-center text-[#0a0a0a] transition-transform hover:-translate-x-1">
+          <ArrowLeft size={20} />
+        </Link>
 
         {/* ── Featured: 2-kolom header + Netflix video card ─────────────── */}
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}
@@ -395,9 +392,72 @@ export default function RayfilmCatalogue() {
             <span className="text-xs text-[#ccc] font-medium">{photos.length} frames</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {photos.map((p, i) => <PhotoCard key={i} src={p.src} index={i} />)}
+            {photos.map((p, i) => <PhotoCard key={i} src={p.src} index={i} onOpen={setActiveIndex} />)}
           </div>
         </motion.div>
+
+        <AnimatePresence>
+          {currentPhoto && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 px-4 py-6"
+              onClick={() => setActiveIndex(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.88, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.88, opacity: 0 }}
+                transition={{ duration: 0.22 }}
+                className="relative w-full max-w-5xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setActiveIndex((prev) => prev === null ? null : (prev - 1 + photos.length) % photos.length)}
+                  className="absolute left-3 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur-sm"
+                  aria-label="Previous photo"
+                >
+                  <ChevronLeft size={22} />
+                </button>
+
+                <button
+                  onClick={() => setActiveIndex((prev) => prev === null ? null : (prev + 1) % photos.length)}
+                  className="absolute right-3 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur-sm"
+                  aria-label="Next photo"
+                >
+                  <ChevronRight size={22} />
+                </button>
+
+                <button
+                  onClick={() => setActiveIndex(null)}
+                  className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur-sm"
+                  aria-label="Close photo"
+                >
+                  <X size={18} />
+                </button>
+
+                <div className="mx-auto flex max-h-[88vh] items-center justify-center overflow-hidden rounded-2xl bg-black/40">
+                  <Image
+                    src={currentPhoto.src}
+                    alt={`RAYFILM photo ${activePhotoIndex + 1}`}
+                    width={1600}
+                    height={1200}
+                    sizes="(max-width: 768px) 90vw, 80vw"
+                    className="block max-h-[88vh] w-auto object-contain"
+                    style={{ display: "block" }}
+                    quality={100}
+                    unoptimized
+                  />
+                </div>
+
+                <div className="mt-4 text-center text-[11px] font-semibold tracking-[0.18em] uppercase text-white/70">
+                  {activePhotoIndex + 1} / {photos.length}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </div>
     </main>

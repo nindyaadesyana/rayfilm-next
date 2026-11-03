@@ -23,7 +23,7 @@ interface FormState { name: string; email: string; subject: string; message: str
 const INIT: FormState = { name: "", email: "", subject: "", message: "" };
 
 const contactCards = [
-  { icon: MessageCircle, label: "WhatsApp",  value: "+62 812-3456-7890", href: "https://wa.me/6281234567890",       hint: "Chat directly"        },
+  { icon: MessageCircle, label: "WhatsApp",  value: "+62 896-7095-9002", href: "https://wa.me/6289670959002",       hint: "Chat directly"        },
   //{ icon: InstagramIcon, label: "Instagram", value: "@rayfilm_",         href: "https://instagram.com/rayfilm_",   hint: "See our latest work"  },
   { icon: Mail,          label: "Email",     value: "rayfilm.work@gmail.com",  href: "mailto:rayfilm.work@gmail.com",           hint: "Send us a message"    },
 ];

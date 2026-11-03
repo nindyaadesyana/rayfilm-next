@@ -33,7 +33,7 @@ const clients = [
   { name: "Kementrian Perhutanan", logo: "/images/clients/kemenhut.png"                               },
   { name: "Bank Raya",             logo: "/images/clients/bankraya.png"   },
   { name: "Samsat Digital",        logo: "/images/clients/samsat.png"     },
-  { name: "Kombucha by Savva",     logo: "/images/clients/nestle.png"                               },
+  { name: "Kombucha by Savva",     logo: "/images/clients/savva.png"                               },
   { name: "Peacock Coffee",        logo: "/images/clients/peacock.png"    },
   { name: "Antarakata",            logo: "/images/clients/antarakata.jpg" },
   { name: "Pisyang Shayang",       logo: "/images/clients/ps.jpg"         },
@@ -91,10 +91,11 @@ export default function ClientsSection() {
           {clients.map((c, i) => (
             <motion.div
               key={c.name}
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 8, scale: 0.94 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.025, duration: 0.4 }}
+              whileHover={{ scale: 1.08 }}
+              transition={{ delay: i * 0.025, duration: 0.45, ease: "easeOut" }}
               style={{
                 display:        "flex",
                 alignItems:     "center",
@@ -102,13 +103,11 @@ export default function ClientsSection() {
                 width:          "100%",
                 maxWidth:       "160px",
                 minHeight:      "72px",
-                opacity:        0.6,
-                transition:     "opacity 0.25s",
+                opacity:        1,
                 cursor:         "default",
                 padding:        "8px 6px",
+                transformOrigin: "center",
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = "1"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = "0.6"; }}
             >
               {/* Logo */}
               <div
